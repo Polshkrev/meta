@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/Polshkrev/gopolutils"
 	"github.com/Polshkrev/gopolutils/fayl"
@@ -37,6 +38,14 @@ func getOutput(command *exec.Cmd, outputChannel chan<- string) {
 func handleScript(command []string, result **exec.Cmd) {
 	var commandPath *fayl.Path = gopolutils.Must(fayl.PathFrom(command[0]).Absolute())
 	*result = exec.Command(commandPath.ToString(), command[1:]...)
+}
+
+func availableCommands(programme *source.Programme, intent source.Command, command []string) {
+	var availableCommands string = fmt.Sprintf("[%s]", strings.Join(programme.AvailableCommands(), ", "))
+	if len(command) == 0 || command == nil {
+		fmt.Fprintln(os.Stderr, gopolutils.NewException(fmt.Sprintf("No command '%s' has been defined for '%s'.\nAvailable Commands: %s", intent, programme.Project.Name, availableCommands)))
+		os.Exit(1)
+	}
 }
 
 func main() {
