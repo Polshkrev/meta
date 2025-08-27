@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/Polshkrev/gopolutils"
 	"github.com/Polshkrev/gopolutils/fayl"
@@ -26,14 +27,21 @@ func readMeta(path *fayl.Path) *source.Programme {
 	return gopolutils.Must(fayl.ReadObject[source.Programme](path))
 }
 
+func getOutput(command *exec.Cmd, outputChannel chan<- string) {
+	var output []byte
+	output, _ = command.CombinedOutput()
+	outputChannel <- string(output)
+	defer close(outputChannel)
+}
+
 func main() {
 	var programme *source.Programme = readMeta(fayl.PathFromParts(FOLDER, FILENAME, FILETYPE))
-	var intent string = cmp.Or(
+	var intent source.Command = cmp.Or(
 		flag.Arg(0),
 		source.SCRIPT,
 	)
 	var outputChannel chan string = make(chan string, 1)
-	// go runCommand(programme, intent, outputChannel)
+	go runCommand(programme, intent, outputChannel)
 	var output string = <-outputChannel
 	fmt.Print(output) // TODO: Make this a redirect instead of simply printing.
 }
