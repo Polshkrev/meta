@@ -1,4 +1,4 @@
-package gopolutils
+package source
 
 import (
 	"fmt"
