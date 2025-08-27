@@ -34,6 +34,11 @@ func getOutput(command *exec.Cmd, outputChannel chan<- string) {
 	defer close(outputChannel)
 }
 
+func handleScript(command []string, result **exec.Cmd) {
+	var commandPath *fayl.Path = gopolutils.Must(fayl.PathFrom(command[0]).Absolute())
+	*result = exec.Command(commandPath.ToString(), command[1:]...)
+}
+
 func main() {
 	var programme *source.Programme = readMeta(fayl.PathFromParts(FOLDER, FILENAME, FILETYPE))
 	var intent source.Command = cmp.Or(
