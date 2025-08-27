@@ -1,0 +1,23 @@
+[project]
+name = "meta"
+author = "Polshkrev"
+description = "A golang build tool."
+
+[project.version]
+minor = 1
+
+[license]
+type = "MIT"
+path = "LICENSE"
+
+[paths]
+readme = "README.md"
+
+[urls]
+repository = "https://github.com/Polshkrev/meta"
+
+[commands]
+script = ["build/build"]
+run = ["bin/meta.exe"]
+build = ["go", "build", "-o", "bin/meta.exe", "meta.go"]
+tidy = ["go", "mod", "tidy"]
