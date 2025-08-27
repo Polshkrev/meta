@@ -48,8 +48,29 @@ func availableCommands(programme *source.Programme, intent source.Command, comma
 	}
 }
 
+func runCommand(programme *source.Programme, intent source.Command, outputChannel chan<- string) {
+	if len(intent) == 0 {
+		fmt.Fprintln(os.Stderr, gopolutils.NewException("No arguments have been provided."))
+		flag.Usage()
+		os.Exit(1)
+	}
+	var command []string = programme.Commands[intent]
+	availableCommands(programme, intent, command)
+	var cmd *exec.Cmd = exec.Command(command[0], command[1:]...)
+	if intent == source.SCRIPT {
+		handleScript(command, &cmd)
+	}
+	go getOutput(cmd, outputChannel)
+}
+
 func main() {
+	var version *bool = flag.Bool("version", false, "Display the version of the programme.")
+	flag.Parse()
 	var programme *source.Programme = readMeta(fayl.PathFromParts(FOLDER, FILENAME, FILETYPE))
+	if *version {
+		fmt.Printf("%s - %s\n", programme.Project.Name, programme.Project.Version.ToString())
+		os.Exit(0)
+	}
 	var intent source.Command = cmp.Or(
 		flag.Arg(0),
 		source.SCRIPT,

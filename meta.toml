@@ -18,6 +18,6 @@ repository = "https://github.com/Polshkrev/meta"
 
 [commands]
 script = ["build/build"]
-run = ["bin/meta.exe"]
+run = ["bin/test.exe"]
 build = ["go", "build", "-o", "bin/meta.exe", "cmd/meta.go"]
 tidy = ["go", "mod", "tidy"]
