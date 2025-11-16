@@ -22,7 +22,7 @@ const (
 
 func readMeta(path *fayl.Path) *source.Programme {
 	if !path.Exists() {
-		fmt.Fprintln(os.Stderr, gopolutils.NewNamedException("IOError", fmt.Sprintf("File '%s' does not exist.", path.ToString())))
+		fmt.Fprintln(os.Stderr, gopolutils.NewNamedException(gopolutils.IOError, fmt.Sprintf("File '%s' does not exist.", path.ToString())))
 		os.Exit(1)
 	}
 	return gopolutils.Must(fayl.ReadObject[source.Programme](path))
