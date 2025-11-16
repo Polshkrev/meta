@@ -100,7 +100,7 @@ func (version Version) IsPublic() bool {
 // If the version object is evaluated to have already been published, a ValueError is returned and no properties are modified.
 func (version *Version) Publish() *gopolutils.Exception {
 	if version.IsPublic() {
-		return gopolutils.NewNamedException("ValueError", "Version is already public.")
+		return gopolutils.NewNamedException(gopolutils.ValueError, "Version is already public.")
 	}
 	version.Major = 1
 	version.Minor = 0
