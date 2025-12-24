@@ -1,4 +1,4 @@
-package source
+package models
 
 // A license a programme uses.
 type License struct {

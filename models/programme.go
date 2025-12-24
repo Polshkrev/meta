@@ -1,4 +1,4 @@
-package source
+package models
 
 // Meta information about a language-agnostic programme.
 type Programme struct {
