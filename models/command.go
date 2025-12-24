@@ -1,4 +1,4 @@
-package source
+package models
 
 // The available command options.
 type Command = string
