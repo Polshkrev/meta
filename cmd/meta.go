@@ -15,24 +15,27 @@ import (
 )
 
 const (
-	FOLDER   string = "."
-	FILENAME string = "meta"
-	FILETYPE string = goserialize.TOMLType
+	Folder   string = "."
+	FileName string = "meta"
+	FileType string = goserialize.TOMLType
 )
 
 func readMeta(path *fayl.Path) *source.Programme {
 	if !path.Exists() {
-		fmt.Fprintln(os.Stderr, gopolutils.NewNamedException(gopolutils.IOError, fmt.Sprintf("File '%s' does not exist.", path.ToString())))
+		fmt.Fprintln(os.Stderr, gopolutils.NewNamedException(gopolutils.FileNotFoundError, fmt.Sprintf("File '%s' does not exist.", path.ToString())))
 		os.Exit(1)
 	}
 	return gopolutils.Must(fayl.ReadObject[source.Programme](path))
 }
 
-func getOutput(command *exec.Cmd, outputChannel chan<- string) {
+func getOutput(command *exec.Cmd, outputChannel chan<- string, errorChannel chan<- error) {
 	var output []byte
-	output, _ = command.CombinedOutput()
+	var outputError error
+	output, outputError = command.CombinedOutput()
 	outputChannel <- string(output)
+	errorChannel <- outputError
 	defer close(outputChannel)
+	defer close(errorChannel)
 }
 
 func handleScript(command []string, result **exec.Cmd) {
@@ -48,7 +51,7 @@ func availableCommands(programme *source.Programme, intent source.Command, comma
 	}
 }
 
-func runCommand(programme *source.Programme, intent source.Command, outputChannel chan<- string) {
+func runCommand(programme *source.Programme, intent source.Command, outputChannel chan<- string, errorChannel chan<- error) {
 	if len(intent) == 0 {
 		fmt.Fprintln(os.Stderr, gopolutils.NewException("No arguments have been provided."))
 		flag.Usage()
@@ -60,23 +63,23 @@ func runCommand(programme *source.Programme, intent source.Command, outputChanne
 	if intent == source.SCRIPT {
 		handleScript(command, &cmd)
 	}
-	go getOutput(cmd, outputChannel)
+	go getOutput(cmd, outputChannel, errorChannel)
 }
 
 func main() {
-	var version *bool = flag.Bool("version", false, "Display the version of the programme.")
+	var programme *source.Programme = readMeta(fayl.PathFromParts(Folder, FileName, FileType))
 	flag.Parse()
-	var programme *source.Programme = readMeta(fayl.PathFromParts(FOLDER, FILENAME, FILETYPE))
-	if *version {
-		fmt.Printf("%s - %s\n", programme.Project.Name, programme.Project.Version.ToString())
-		os.Exit(0)
-	}
 	var intent source.Command = cmp.Or(
 		flag.Arg(0),
 		source.SCRIPT,
 	)
 	var outputChannel chan string = make(chan string, 1)
-	go runCommand(programme, intent, outputChannel)
+	var errorChannel chan error = make(chan error, 1)
+	go runCommand(programme, intent, outputChannel, errorChannel)
 	var output string = <-outputChannel
+	var outputError error = <-errorChannel
+	if outputError != nil {
+		panic(outputError)
+	}
 	fmt.Print(output) // TODO: Make this a redirect instead of simply printing.
 }
