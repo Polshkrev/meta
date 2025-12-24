@@ -1,4 +1,4 @@
-package source
+package models
 
 // The meta details of a language-agnostic serializable project.
 type Project struct {
