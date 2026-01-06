@@ -70,7 +70,7 @@ func main() {
 	var programme *models.Programme = readMeta(fayl.PathFromParts(Folder, FileName, FileType))
 	flag.Parse()
 	var intent models.Command = cmp.Or(
-		flag.Arg(0),
+		models.Command(flag.Arg(0)), // ! This will error if the argument isn't defined in the enum.
 		models.SCRIPT,
 	)
 	var outputChannel chan string = make(chan string, 1)
