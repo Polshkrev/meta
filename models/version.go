@@ -8,11 +8,11 @@ import (
 
 // Representation of a semantic versioning object.
 type Version struct {
-	Name        string `json:"name" toml:"name"`
-	Description string `json:"description" toml:"description"`
-	Major       uint8  `json:"major" toml:"major"`
-	Minor       uint8  `json:"minor" toml:"minor"`
-	Patch       uint8  `json:"patch" toml:"patch"`
+	Name        string `json:"name,omitempty,omitzero" toml:"name,omitempty,omitzero"`
+	Description string `json:"description,omitempty,omitzero" toml:"description,omitempty,omitzero"`
+	Major       uint8  `json:"major,omitempty,omitzero" toml:"major,omitempty,omitzero"`
+	Minor       uint8  `json:"minor,omitempty,omitzero" toml:"minor,omitempty,omitzero"`
+	Patch       uint8  `json:"patch,omitempty,omitzero" toml:"patch,omitempty,omitzero"`
 }
 
 // Construct a new zero-initialized version object.
