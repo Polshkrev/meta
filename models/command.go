@@ -1,14 +1,16 @@
 package models
 
+import "github.com/Polshkrev/gopolutils"
+
 // The available command options.
-type Command = string
+type Command = gopolutils.StringEnum
 
 const (
-	BUILD  Command = "build"
-	RUN    Command = "run"
-	TEST   Command = "test"
-	SERVE  Command = "serve"
-	DOCS   Command = "docs"
-	DIST   Command = "dist"
-	SCRIPT Command = "script"
+	Build  Command = "build"
+	Run    Command = "run"
+	Test   Command = "test"
+	Serve  Command = "serve"
+	Docs   Command = "docs"
+	Dist   Command = "dist"
+	Script Command = "script"
 )
