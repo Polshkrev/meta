@@ -10,14 +10,13 @@ import (
 
 	"github.com/Polshkrev/gopolutils"
 	"github.com/Polshkrev/gopolutils/fayl"
-	"github.com/Polshkrev/goserialize"
 	"github.com/Polshkrev/meta/models"
 )
 
 const (
-	Folder   string = "."
-	FileName string = "meta"
-	FileType string = goserialize.TOMLType
+	Folder   string      = "."
+	FileName string      = "meta"
+	FileType fayl.Suffix = fayl.Toml
 )
 
 func readMeta(path *fayl.Path) *models.Programme {
@@ -60,7 +59,7 @@ func runCommand(programme *models.Programme, intent models.Command, outputChanne
 	var command []string = programme.Commands[intent]
 	availableCommands(programme, intent, command)
 	var cmd *exec.Cmd = exec.Command(command[0], command[1:]...)
-	if intent == models.SCRIPT {
+	if intent == models.Script {
 		handleScript(command, &cmd)
 	}
 	go getOutput(cmd, outputChannel, errorChannel)
@@ -71,7 +70,7 @@ func main() {
 	flag.Parse()
 	var intent models.Command = cmp.Or(
 		flag.Arg(0),
-		models.SCRIPT,
+		models.Script,
 	)
 	var outputChannel chan string = make(chan string, 1)
 	var errorChannel chan error = make(chan error, 1)
