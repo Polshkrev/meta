@@ -2,10 +2,10 @@ package models
 
 // The meta details of a language-agnostic serializable project.
 type Project struct {
-	Name        string   `json:"name" toml:"name"`
-	Author      string   `json:"author" toml:"author"`
-	Description string   `json:"description" toml:"description"`
-	Version     *Version `json:"version" toml:"version"`
+	Name        string   `json:"name,omitempty,omitzero" toml:"name,omitempty,omitzero"`
+	Author      string   `json:"author,omitempty,omitzero" toml:"author,omitempty,omitzero"`
+	Description string   `json:"description,omitempty,omitzero" toml:"description,omitempty,omitzero"`
+	Version     *Version `json:"version,omitempty,omitzero" toml:"version,omitempty,omitzero"`
 }
 
 // Construct a new project.
