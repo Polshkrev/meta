@@ -67,7 +67,17 @@ func runCommand(programme *models.Programme, intent models.Command, outputChanne
 
 func main() {
 	var programme *models.Programme = readMeta(fayl.PathFromParts(Folder, FileName, FileType))
+	var versionFlag *bool = flag.Bool("version", false, "Display the version of the programme.")
+	var licenseFlag *bool = flag.Bool("license", false, "Display the license of the programme.")
 	flag.Parse()
+	if *versionFlag {
+		fmt.Printf("%s - %s", programme.Project.Name, programme.Project.Version.ToString())
+		os.Exit(0)
+	}
+	if *licenseFlag {
+		fmt.Print(gopolutils.Must(programme.ReadLicense()))
+		os.Exit(0)
+	}
 	var intent models.Command = cmp.Or(
 		flag.Arg(0),
 		models.Script,
