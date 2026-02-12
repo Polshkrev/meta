@@ -22,7 +22,7 @@ func NewLicense(kind, path string) *License {
 
 // Read the license file as a string.
 // Returns the contents of the license file as string.
-// If the absolute path of the file can not be obtained, or the file can not be read, an IOError is returned with an empty string.
+// If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
 func (license License) Read() (string, *gopolutils.Exception) {
 	var raw []byte
 	var except *gopolutils.Exception
