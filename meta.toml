@@ -1,6 +1,6 @@
 [project]
 name = "meta"
-author = "Polshkrev"
+author = {name = "Polshkrev"}
 description = "A golang build tool."
 
 [project.version]

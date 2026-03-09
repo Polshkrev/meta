@@ -12,5 +12,6 @@ const (
 	Serve  Command = "serve"
 	Docs   Command = "docs"
 	Dist   Command = "dist"
+	Help   Command = "help"
 	Script Command = "script"
 )
