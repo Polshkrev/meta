@@ -41,6 +41,32 @@ func NewProgramme(project *Project) *Programme {
 
 // Obtain the available commands for the project.
 // Returns a slice of strings containing all of the available commands.
+func (programme *Programme) AvailablePaths() []string {
+	programme.RLock()
+	defer programme.RUnlock()
+	var result []string = make([]string, 0)
+	var key string
+	for key = range programme.Paths {
+		result = append(result, key)
+	}
+	return result
+}
+
+// Obtain the available urls for the project.
+// Returns a slice of strings containing all of the available urls.
+func (programme *Programme) AvailableUrls() []string {
+	programme.RLock()
+	defer programme.RUnlock()
+	var result []string = make([]string, 0)
+	var key string
+	for key = range programme.Urls {
+		result = append(result, key)
+	}
+	return result
+}
+
+// Obtain the available paths for the project.
+// Returns a slice of strings containing all of the available paths.
 func (programme *Programme) AvailableCommands() []string {
 	programme.RLock()
 	defer programme.RUnlock()
