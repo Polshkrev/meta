@@ -117,8 +117,8 @@ func run(programme *models.Programme, intent models.Command) string {
 
 func main() {
 	var programme *models.Programme = readMeta(fayl.PathFromParts(Folder, FileName, FileType))
-	var versionFlag *bool = flag.Bool("version", false, "Display the version of the programme.")
-	var licenseFlag *bool = flag.Bool("license", false, "Display the license of the programme.")
+	var versionFlag *bool = flag.Bool("v", false, "Display the version of the programme.")
+	var licenseFlag *bool = flag.Bool("l", false, "Display the license of the programme.")
 	var listFlag *string = flag.String("a", "", "Display all available keys at the given label.")
 	flag.Parse()
 	if *versionFlag {
