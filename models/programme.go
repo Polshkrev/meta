@@ -17,7 +17,7 @@ type Programme struct {
 	tagsLock         sync.RWMutex
 	Tags             []string `json:"tags,omitempty,omitzero" toml:"tags,omitempty,omitzero"`
 	contributersLock sync.RWMutex
-	Contributers     []string `json:"contributers,omitempty,omitzero" toml:"contributers,omitempty,omitzero"`
+	Contributers     []*Author `json:"contributers,omitempty,omitzero" toml:"contributers,omitempty,omitzero"`
 	pathsLock        sync.RWMutex
 	Paths            map[string]string `json:"paths,omitempty,omitzero" toml:"paths,omitempty,omitzero"`
 	urlsLock         sync.RWMutex
@@ -32,7 +32,7 @@ func NewProgramme(project *Project) *Programme {
 	var programme *Programme = new(Programme)
 	programme.Project = project
 	programme.Tags = make([]string, 0)
-	programme.Contributers = make([]string, 0)
+	programme.Contributers = make([]*Author, 0)
 	programme.Paths = make(map[string]string, 0)
 	programme.Urls = make(map[string]string, 0)
 	programme.Commands = make(map[string][]string, 0)
@@ -67,7 +67,7 @@ func (programme *Programme) AddTags(tags ...string) {
 }
 
 // Add contributers to the programme.
-func (programme *Programme) AddContributers(contributers ...string) {
+func (programme *Programme) AddContributers(contributers ...*Author) {
 	programme.Lock()
 	defer programme.Unlock()
 	programme.Contributers = append(programme.Contributers, contributers...)
