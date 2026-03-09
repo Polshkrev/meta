@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/Polshkrev/gopolutils"
-	"github.com/Polshkrev/gopolutils/collections/safe"
+	"github.com/Polshkrev/gopolutils/collections"
 	"github.com/Polshkrev/gopolutils/fayl"
 	"github.com/Polshkrev/meta/models"
 )
@@ -21,15 +21,15 @@ const (
 )
 
 var (
-	mapping safe.Mapping[string, []string] = safe.NewMap[string, []string]()
+	mapping collections.Mapping[string, []string] = collections.NewMap[string, []string]()
 )
 
-func initializeMapping(mapping safe.Mapping[string, []string], programme *models.Programme) {
+func initializeMapping(mapping collections.Mapping[string, []string], programme *models.Programme) {
 	var except *gopolutils.Exception = mapping.Insert("tags", programme.Tags)
 	if except != nil {
 		panic(except)
 	}
-	except = mapping.Insert("contributers", programme.Contributers)
+	except = mapping.Insert("contributers", programme.AvailableContributers())
 	if except != nil {
 		panic(except)
 	}
@@ -47,7 +47,7 @@ func initializeMapping(mapping safe.Mapping[string, []string], programme *models
 	}
 }
 
-func getAvailableKeys(key string, mapping safe.Mapping[string, []string]) ([]string, *gopolutils.Exception) {
+func getAvailableKeys(key string, mapping collections.Mapping[string, []string]) ([]string, *gopolutils.Exception) {
 	var keys *[]string
 	var except *gopolutils.Exception
 	keys, except = mapping.At(key)
@@ -104,8 +104,8 @@ func runCommand(programme *models.Programme, intent models.Command, outputChanne
 }
 
 func run(programme *models.Programme, intent models.Command) string {
-	var outputChannel chan string = make(chan string, 1)
-	var errorChannel chan error = make(chan error, 1)
+	var outputChannel chan string = make(chan string, 20)
+	var errorChannel chan error = make(chan error, 20)
 	go runCommand(programme, intent, outputChannel, errorChannel)
 	var output string = <-outputChannel
 	var outputError error = <-errorChannel
@@ -135,6 +135,7 @@ func main() {
 			var key string = keys[i]
 			fmt.Println(key)
 		}
+		os.Exit(0)
 	}
 	var intent models.Command = cmp.Or(
 		flag.Arg(0),
