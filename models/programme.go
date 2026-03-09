@@ -39,6 +39,20 @@ func NewProgramme(project *Project) *Programme {
 	return programme
 }
 
+// Obtain the names of each of the contributers for the project.
+// Returns a slice of strings containing all of the names of each of the contributers.
+func (programme *Programme) AvailableContributers() []string {
+	programme.RLock()
+	defer programme.RUnlock()
+	var result []string = make([]string, 0)
+	var i int
+	for i = range programme.Contributers {
+		var contributer *Author = programme.Contributers[i]
+		result = append(result, contributer.Name)
+	}
+	return result
+}
+
 // Obtain the available commands for the project.
 // Returns a slice of strings containing all of the available commands.
 func (programme *Programme) AvailablePaths() []string {
