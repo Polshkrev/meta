@@ -11,19 +11,19 @@ import (
 // Meta information about a language-agnostic programme.
 type Programme struct {
 	projectLock      sync.RWMutex
-	Project          *Project `json:"project,omitempty,omitzero" toml:"project,omitempty,omitzero"`
+	Project          *Project `json:"project,omitempty,omitzero" yaml:"project,omitempty,omitzero" toml:"project,omitempty,omitzero"`
 	licenseLock      sync.RWMutex
-	License          *License `json:"license,omitempty,omitzero" toml:"license,omitempty,omitzero"`
+	License          *License `json:"license,omitempty,omitzero" yaml:"license,omitempty,omitzero" toml:"license,omitempty,omitzero"`
 	tagsLock         sync.RWMutex
-	Tags             []string `json:"tags,omitempty,omitzero" toml:"tags,omitempty,omitzero"`
+	Tags             []string `json:"tags,omitempty,omitzero" yaml:"tags,omitempty,omitzero" toml:"tags,omitempty,omitzero"`
 	contributersLock sync.RWMutex
-	Contributers     []*Author `json:"contributers,omitempty,omitzero" toml:"contributers,omitempty,omitzero"`
+	Contributers     []*Author `json:"contributers,omitempty,omitzero" yaml:"contributers,omitempty,omitzero" toml:"contributers,omitempty,omitzero"`
 	pathsLock        sync.RWMutex
-	Paths            map[string]string `json:"paths,omitempty,omitzero" toml:"paths,omitempty,omitzero"`
+	Paths            map[string]string `json:"paths,omitempty,omitzero" yaml:"paths,omitempty,omitzero" toml:"paths,omitempty,omitzero"`
 	urlsLock         sync.RWMutex
-	Urls             map[string]string `json:"urls,omitempty,omitzero" toml:"urls,omitempty,omitzero"`
+	Urls             map[string]string `json:"urls,omitempty,omitzero" yaml:"urls,omitempty,omitzero" toml:"urls,omitempty,omitzero"`
 	commandsLock     sync.RWMutex
-	Commands         map[string][]string `json:"commands,omitempty,omitzero" toml:"commands,omitempty,omitzero"`
+	Commands         map[string][]string `json:"commands,omitempty,omitzero" yaml:"commands,omitempty,omitzero" toml:"commands,omitempty,omitzero"`
 }
 
 // Construct a new programme.
@@ -114,7 +114,7 @@ func (programme *Programme) AddContributers(contributers ...*Author) {
 }
 
 // Add a key to a map only if the key is not already stored in the map.
-// If the key is already found within the map, a `KeyError` is returned.
+// If the key is already found within the map, a [gopolutils.KeyError] is returned.
 func checkedAdd[Type any](mapping *map[string]Type, key string, value Type) *gopolutils.Exception {
 	var ok bool
 	_, ok = (*mapping)[key]
@@ -126,7 +126,7 @@ func checkedAdd[Type any](mapping *map[string]Type, key string, value Type) *gop
 }
 
 // Add a path to the programme.
-// If the path is already found within the programme, a `KeyError` is returned.
+// If the path is already found within the programme, a [gopolutils.KeyError] is returned.
 func (programme *Programme) AddPath(key, value string) *gopolutils.Exception {
 	programme.Lock()
 	defer programme.Unlock()
@@ -134,7 +134,7 @@ func (programme *Programme) AddPath(key, value string) *gopolutils.Exception {
 }
 
 // Add a url to the programme.
-// If the url is already found within the programme, a `KeyError` is returned.
+// If the url is already found within the programme, a [gopolutils.KeyError] is returned.
 func (programme *Programme) AddUrl(key, value string) *gopolutils.Exception {
 	programme.Lock()
 	defer programme.Unlock()
@@ -142,17 +142,17 @@ func (programme *Programme) AddUrl(key, value string) *gopolutils.Exception {
 }
 
 // Add a command to the programme.
-// If the command is already found within the programme, a `KeyError` is returned.
+// If the command is already found within the programme, a [gopolutils.KeyError] is returned.
 func (programme *Programme) AddCommand(command Command, parts ...string) *gopolutils.Exception {
 	programme.Lock()
 	defer programme.Unlock()
-	return checkedAdd(&programme.Commands, command, parts)
+	return checkedAdd(&programme.Commands, command.String(), parts)
 }
 
 // Read a stored path within the programme.
 // Returns the path stored at the given key.
-// If the key is not found in the programme, a `KeyError` is returned with an empty string.
-// If the absolute path of the file can not be obtained, or the file can not be read, an IOError is returned with an empty string.
+// If the key is not found in the programme, a [gopolutils.KeyError] is returned with an empty string.
+// If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
 func (programme *Programme) ReadPath(path string) (string, *gopolutils.Exception) {
 	programme.RLock()
 	defer programme.RUnlock()
@@ -160,7 +160,7 @@ func (programme *Programme) ReadPath(path string) (string, *gopolutils.Exception
 	var item string
 	item, ok = programme.Paths[path]
 	if !ok {
-		return "", gopolutils.NewNamedException(gopolutils.KeyError, fmt.Sprintf("Can not access path %s.", path))
+		return "", gopolutils.NewNamedException(gopolutils.KeyError, "Can not access path %s.", path)
 	}
 	var raw []byte
 	var except *gopolutils.Exception
@@ -173,10 +173,17 @@ func (programme *Programme) ReadPath(path string) (string, *gopolutils.Exception
 
 // Read the license file as a string.
 // Returns the contents of the license file as string.
-// If the absolute path of the file can not be obtained, or the file can not be read, an IOError is returned with an empty string.
+// If the license is nil, an [gopolutils.IOError] is returned with an empty string.
+// If the license is determined to be incomplete or empty, a [gopolutils.ValueError] is returned with an empty string.
+// If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
 func (programme *Programme) ReadLicense() (string, *gopolutils.Exception) {
 	programme.RLock()
 	defer programme.RUnlock()
+	if programme.License == nil {
+		return "", gopolutils.NewNamedException(gopolutils.IOError, "No license has been provided for project '%s'.", programme)
+	} else if programme.License.IsEmpty() {
+		return "", gopolutils.NewNamedException(gopolutils.ValueError, "The license for project '%s' is either incomplete or empty.", programme)
+	}
 	return programme.License.Read()
 }
 
@@ -222,4 +229,10 @@ func (programme *Programme) RUnlock() {
 	programme.pathsLock.RUnlock()
 	programme.urlsLock.RUnlock()
 	programme.commandsLock.RUnlock()
+}
+
+// Represent a programme as a string.
+// Returns a string representation of a programme.
+func (programme *Programme) String() string {
+	return programme.Project.Name
 }

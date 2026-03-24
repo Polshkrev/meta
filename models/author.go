@@ -2,11 +2,12 @@ package models
 
 import "sync"
 
+// Representation of an author of a project.
 type Author struct {
 	nameLock  sync.RWMutex
-	Name      string `json:"name,omitempty" toml:"name,omitempty"`
+	Name      string `json:"name,omitempty" yaml:"name,omitempty" toml:"name,omitempty"`
 	emailLock sync.RWMutex
-	Email     string `json:"email,omitempty" toml:"email,omitempty"`
+	Email     string `json:"email,omitempty" yaml:"email,omitempty" toml:"email,omitempty"`
 }
 
 // Construct a new project author.
