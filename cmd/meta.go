@@ -82,7 +82,7 @@ func handleScript(command []string, result **exec.Cmd) {
 func availableCommands(programme *models.Programme, intent models.Command, command []string) {
 	var availableCommands string = fmt.Sprintf("[%s]", strings.Join(programme.AvailableCommands(), ", "))
 	if len(command) == 0 || command == nil {
-		fmt.Fprintln(os.Stderr, gopolutils.NewException(fmt.Sprintf("No command '%s' has been defined for '%s'.\nAvailable Commands: %s", intent, programme.Project.Name, availableCommands)))
+		fmt.Fprintln(os.Stderr, gopolutils.NewException("No command '%s' has been defined for '%s'.\nAvailable Commands: %s", intent, programme, availableCommands))
 		os.Exit(1)
 	}
 }
