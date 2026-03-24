@@ -121,7 +121,7 @@ func main() {
 	var listFlag *string = flag.String("a", "", "Display all available keys at the given label.")
 	flag.Parse()
 	if *versionFlag {
-		fmt.Printf("%s - %s", programme.Project.Name, programme.Project.Version.ToString())
+		fmt.Printf("%s - %s", programme.Project.Name, programme.Project.Version))
 		os.Exit(0)
 	} else if *licenseFlag {
 		fmt.Print(gopolutils.Must(programme.ReadLicense()))
