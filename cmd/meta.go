@@ -59,8 +59,7 @@ func getAvailableKeys(key string, mapping collections.Mapping[string, []string])
 
 func readMeta(path *fayl.Path) *models.Programme {
 	if !path.Exists() {
-		fmt.Fprintln(os.Stderr, gopolutils.NewNamedException(gopolutils.FileNotFoundError, fmt.Sprintf("File '%s' does not exist.", path.ToString())))
-		os.Exit(1)
+		panic(gopolutils.NewNamedException(gopolutils.FileNotFoundError, "File '%s' does not exist.", path))
 	}
 	return gopolutils.Must(fayl.ReadObject[models.Programme](path))
 }
@@ -77,7 +76,7 @@ func getOutput(command *exec.Cmd, outputChannel chan<- string, errorChannel chan
 
 func handleScript(command []string, result **exec.Cmd) {
 	var commandPath *fayl.Path = gopolutils.Must(fayl.PathFrom(command[0]).Absolute())
-	*result = exec.Command(commandPath.ToString(), command[1:]...)
+	*result = exec.Command(commandPath.String(), command[1:]...)
 }
 
 func availableCommands(programme *models.Programme, intent models.Command, command []string) {
@@ -94,7 +93,7 @@ func runCommand(programme *models.Programme, intent models.Command, outputChanne
 		flag.Usage()
 		os.Exit(1)
 	}
-	var command []string = programme.Commands[intent]
+	var command []string = programme.Commands[intent.String()]
 	availableCommands(programme, intent, command)
 	var cmd *exec.Cmd = exec.Command(command[0], command[1:]...)
 	if intent == models.Script {
@@ -137,10 +136,14 @@ func main() {
 		}
 		os.Exit(0)
 	}
-	var intent models.Command = cmp.Or(
+	var intent string = cmp.Or(
 		flag.Arg(0),
-		models.Script,
+		models.Script.String(),
 	)
-	var output string = run(programme, intent)
+	var command models.Command = models.Command(intent)
+	if !command.IsValid() {
+		panic(gopolutils.NewNamedException(gopolutils.ValueError, "'%s' is not a valid command.", intent))
+	}
+	var output string = run(programme, command)
 	fmt.Print(output) // TODO: Make this a redirect instead of simply printing.
 }
