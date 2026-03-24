@@ -2,6 +2,7 @@
 name = "meta"
 author = {name = "Polshkrev"}
 description = "A golang build tool."
+type = "application"
 
 [project.version]
 minor = 1
