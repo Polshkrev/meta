@@ -10,9 +10,9 @@ import (
 // A license a programme uses.
 type License struct {
 	typeLock sync.RWMutex
-	Type     string `json:"type" toml:"type"`
+	Type     string `json:"type" yaml:"type" toml:"type"`
 	pathLock sync.RWMutex
-	Path     string `json:"path" toml:"path"`
+	Path     string `json:"path" yaml:"path" toml:"path"`
 }
 
 // Construct a new license.
@@ -37,6 +37,12 @@ func (license *License) Read() (string, *gopolutils.Exception) {
 		return "", except
 	}
 	return string(raw), nil
+}
+
+// Determine if the license is empty.
+// Returns true if the length of any of the license properties are equal to zero.
+func (license *License) IsEmpty() bool {
+	return len(license.Type) == 0 || len(license.Path) == 0
 }
 
 // Lock the internal mutex of the license writing.
