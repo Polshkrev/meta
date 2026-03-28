@@ -9,22 +9,25 @@ import (
 	"strings"
 
 	"github.com/Polshkrev/gopolutils"
-	"github.com/Polshkrev/gopolutils/collections"
+	"github.com/Polshkrev/gopolutils/collections/safe"
 	"github.com/Polshkrev/gopolutils/fayl"
 	"github.com/Polshkrev/meta/models"
 )
 
 const (
-	Folder   string      = "."
-	FileName string      = "meta"
-	FileType fayl.Suffix = fayl.Toml
+	Folder   string      = "."       // Parent folder where the target file is stored.
+	FileName string      = "meta"    // Name of the target file.
+	FileType fayl.Suffix = fayl.Toml // Suffix of the target file.
 )
 
 var (
-	mapping collections.Mapping[string, []string] = collections.NewMap[string, []string]()
+	// Mapping of each of the available keys within a given tag.
+	mapping safe.Mapping[string, []string] = safe.NewMap[string, []string]()
 )
 
-func initializeMapping(mapping collections.Mapping[string, []string], programme *models.Programme) {
+// Intialize a given mapping with each of the programme's properties.
+// If any of the insertions fails, the function panics.
+func initializeMapping(mapping safe.Mapping[string, []string], programme *models.Programme) {
 	var except *gopolutils.Exception = mapping.Insert("tags", programme.Tags)
 	if except != nil {
 		panic(except)
@@ -47,7 +50,11 @@ func initializeMapping(mapping collections.Mapping[string, []string], programme 
 	}
 }
 
-func getAvailableKeys(key string, mapping collections.Mapping[string, []string]) ([]string, *gopolutils.Exception) {
+// Obtain the available keys within a given mapping at a given tag.
+// Returns the available keys within the mapping at a given tag.
+// If the mapping is empty, a [gopolutils.ValueError] is returned with a nil data pointer.
+// If the key is not in the mapping, a [gopolutils.KeyError] is returned with a nil data pointer.
+func getAvailableKeys(key string, mapping safe.Mapping[string, []string]) ([]string, *gopolutils.Exception) {
 	var keys *[]string
 	var except *gopolutils.Exception
 	keys, except = mapping.At(key)
@@ -57,6 +64,9 @@ func getAvailableKeys(key string, mapping collections.Mapping[string, []string])
 	return *keys, nil
 }
 
+// Read the given target file.
+// Returns a new programme based on the given [fayl.Path].
+// If the given [fayl.Path] does not exist, the function panics with a [gopolutils.FileNotFoundError].
 func readMeta(path *fayl.Path) *models.Programme {
 	if !path.Exists() {
 		panic(gopolutils.NewNamedException(gopolutils.FileNotFoundError, "File '%s' does not exist.", path))
@@ -64,29 +74,34 @@ func readMeta(path *fayl.Path) *models.Programme {
 	return gopolutils.Must(fayl.ReadObject[models.Programme](path))
 }
 
+// Obtain the output of the given command.
 func getOutput(command *exec.Cmd, outputChannel chan<- string, errorChannel chan<- error) {
+	defer close(outputChannel)
+	defer close(errorChannel)
 	var output []byte
 	var outputError error
 	output, outputError = command.CombinedOutput()
 	outputChannel <- string(output)
 	errorChannel <- outputError
-	defer close(outputChannel)
-	defer close(errorChannel)
 }
 
+// Handle the script option given to the given command result.
 func handleScript(command []string, result **exec.Cmd) {
 	var commandPath *fayl.Path = gopolutils.Must(fayl.PathFrom(command[0]).Absolute())
 	*result = exec.Command(commandPath.String(), command[1:]...)
 }
 
+// Obtain the available commands of the given programme.
 func availableCommands(programme *models.Programme, intent models.Command, command []string) {
 	var availableCommands string = fmt.Sprintf("[%s]", strings.Join(programme.AvailableCommands(), ", "))
-	if len(command) == 0 || command == nil {
-		fmt.Fprintln(os.Stderr, gopolutils.NewException("No command '%s' has been defined for '%s'.\nAvailable Commands: %s", intent, programme, availableCommands))
-		os.Exit(1)
+	if len(command) != 0 || command != nil {
+		return
 	}
+	fmt.Fprintln(os.Stderr, gopolutils.NewException(fmt.Sprintf("No command '%s' has been defined for '%s'.\nAvailable Commands: %s", intent, programme.Project.Name, availableCommands)))
+	os.Exit(1)
 }
 
+// Run a specified programme with a given intent.
 func runCommand(programme *models.Programme, intent models.Command, outputChannel chan<- string, errorChannel chan<- error) {
 	if len(intent) == 0 {
 		fmt.Fprintln(os.Stderr, gopolutils.NewNamedException(gopolutils.RuntimeError, "No arguments have been provided."))
@@ -102,9 +117,11 @@ func runCommand(programme *models.Programme, intent models.Command, outputChanne
 	go getOutput(cmd, outputChannel, errorChannel)
 }
 
+// Run a given programme at a given intent.
+// Returns the string representation of the executed command.
 func run(programme *models.Programme, intent models.Command) string {
-	var outputChannel chan string = make(chan string, 20)
-	var errorChannel chan error = make(chan error, 20)
+	var outputChannel chan string = make(chan string, 1)
+	var errorChannel chan error = make(chan error, 1)
 	go runCommand(programme, intent, outputChannel, errorChannel)
 	var output string = <-outputChannel
 	var outputError error = <-errorChannel
