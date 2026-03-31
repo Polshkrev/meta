@@ -10,7 +10,7 @@ import (
 
 // Meta information about a language-agnostic programme.
 type Programme struct {
-	projectLock      sync.RWMutex
+	// projectLock      sync.RWMutex
 	Project          *Project `json:"project,omitempty,omitzero" yaml:"project,omitempty,omitzero" toml:"project,omitempty,omitzero"`
 	licenseLock      sync.RWMutex
 	License          *License `json:"license,omitempty,omitzero" yaml:"license,omitempty,omitzero" toml:"license,omitempty,omitzero"`
@@ -42,8 +42,6 @@ func NewProgramme(project *Project) *Programme {
 // Obtain the names of each of the contributers for the project.
 // Returns a slice of strings containing all of the names of each of the contributers.
 func (programme *Programme) AvailableContributers() []string {
-	programme.RLock()
-	defer programme.RUnlock()
 	var result []string = make([]string, 0)
 	var i int
 	for i = range programme.Contributers {
@@ -56,8 +54,6 @@ func (programme *Programme) AvailableContributers() []string {
 // Obtain the available commands for the project.
 // Returns a slice of strings containing all of the available commands.
 func (programme *Programme) AvailablePaths() []string {
-	programme.RLock()
-	defer programme.RUnlock()
 	var result []string = make([]string, 0)
 	var key string
 	for key = range programme.Paths {
@@ -69,8 +65,6 @@ func (programme *Programme) AvailablePaths() []string {
 // Obtain the available urls for the project.
 // Returns a slice of strings containing all of the available urls.
 func (programme *Programme) AvailableUrls() []string {
-	programme.RLock()
-	defer programme.RUnlock()
 	var result []string = make([]string, 0)
 	var key string
 	for key = range programme.Urls {
@@ -82,8 +76,6 @@ func (programme *Programme) AvailableUrls() []string {
 // Obtain the available paths for the project.
 // Returns a slice of strings containing all of the available paths.
 func (programme *Programme) AvailableCommands() []string {
-	programme.RLock()
-	defer programme.RUnlock()
 	var result []string = make([]string, 0)
 	var key string
 	for key = range programme.Commands {
@@ -94,22 +86,16 @@ func (programme *Programme) AvailableCommands() []string {
 
 // Add a license to the programme.
 func (programme *Programme) AddLicense(license *License) {
-	programme.Lock()
-	defer programme.Unlock()
 	programme.License = license
 }
 
 // Add tags to the programme.
 func (programme *Programme) AddTags(tags ...string) {
-	programme.Lock()
-	defer programme.Unlock()
 	programme.Tags = append(programme.Tags, tags...)
 }
 
 // Add contributers to the programme.
 func (programme *Programme) AddContributers(contributers ...*Author) {
-	programme.Lock()
-	defer programme.Unlock()
 	programme.Contributers = append(programme.Contributers, contributers...)
 }
 
@@ -128,24 +114,18 @@ func checkedAdd[Type any](mapping *map[string]Type, key string, value Type) *gop
 // Add a path to the programme.
 // If the path is already found within the programme, a [gopolutils.KeyError] is returned.
 func (programme *Programme) AddPath(key, value string) *gopolutils.Exception {
-	programme.Lock()
-	defer programme.Unlock()
 	return checkedAdd(&programme.Paths, key, value)
 }
 
 // Add a url to the programme.
 // If the url is already found within the programme, a [gopolutils.KeyError] is returned.
 func (programme *Programme) AddUrl(key, value string) *gopolutils.Exception {
-	programme.Lock()
-	defer programme.Unlock()
 	return checkedAdd(&programme.Urls, key, value)
 }
 
 // Add a command to the programme.
 // If the command is already found within the programme, a [gopolutils.KeyError] is returned.
 func (programme *Programme) AddCommand(command Command, parts ...string) *gopolutils.Exception {
-	programme.Lock()
-	defer programme.Unlock()
 	return checkedAdd(&programme.Commands, command.String(), parts)
 }
 
@@ -154,8 +134,6 @@ func (programme *Programme) AddCommand(command Command, parts ...string) *gopolu
 // If the key is not found in the programme, a [gopolutils.KeyError] is returned with an empty string.
 // If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
 func (programme *Programme) ReadPath(path string) (string, *gopolutils.Exception) {
-	programme.RLock()
-	defer programme.RUnlock()
 	var ok bool
 	var item string
 	item, ok = programme.Paths[path]
@@ -177,58 +155,12 @@ func (programme *Programme) ReadPath(path string) (string, *gopolutils.Exception
 // If the license is determined to be incomplete or empty, a [gopolutils.ValueError] is returned with an empty string.
 // If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
 func (programme *Programme) ReadLicense() (string, *gopolutils.Exception) {
-	programme.RLock()
-	defer programme.RUnlock()
 	if programme.License == nil {
 		return "", gopolutils.NewNamedException(gopolutils.IOError, "No license has been provided for project '%s'.", programme)
 	} else if programme.License.IsEmpty() {
 		return "", gopolutils.NewNamedException(gopolutils.ValueError, "The license for project '%s' is either incomplete or empty.", programme)
 	}
 	return programme.License.Read()
-}
-
-// Lock the internal mutex of the programme writing.
-func (programme *Programme) Lock() {
-	programme.projectLock.Lock()
-	programme.licenseLock.Lock()
-	programme.tagsLock.Lock()
-	programme.contributersLock.Lock()
-	programme.pathsLock.Lock()
-	programme.urlsLock.Lock()
-	programme.commandsLock.Lock()
-}
-
-// Unlock the internal mutex of the programme writing.
-func (programme *Programme) Unlock() {
-	programme.projectLock.Unlock()
-	programme.licenseLock.Unlock()
-	programme.tagsLock.Unlock()
-	programme.contributersLock.Unlock()
-	programme.pathsLock.Unlock()
-	programme.urlsLock.Unlock()
-	programme.commandsLock.Unlock()
-}
-
-// Lock the internal mutex of the programme for reading.
-func (programme *Programme) RLock() {
-	programme.projectLock.RLock()
-	programme.licenseLock.RLock()
-	programme.tagsLock.RLock()
-	programme.contributersLock.RLock()
-	programme.pathsLock.RLock()
-	programme.urlsLock.RLock()
-	programme.commandsLock.RLock()
-}
-
-// Unlock the internal mutex of the programme for reading.
-func (programme *Programme) RUnlock() {
-	programme.projectLock.RUnlock()
-	programme.licenseLock.RUnlock()
-	programme.tagsLock.RUnlock()
-	programme.contributersLock.RUnlock()
-	programme.pathsLock.RUnlock()
-	programme.urlsLock.RUnlock()
-	programme.commandsLock.RUnlock()
 }
 
 // Represent a programme as a string.
