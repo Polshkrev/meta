@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/Polshkrev/gopolutils"
 	"github.com/Polshkrev/gopolutils/fayl"
@@ -10,20 +9,13 @@ import (
 
 // Meta information about a language-agnostic programme.
 type Programme struct {
-	// projectLock      sync.RWMutex
-	Project          *Project `json:"project,omitempty,omitzero" yaml:"project,omitempty,omitzero" toml:"project,omitempty,omitzero"`
-	licenseLock      sync.RWMutex
-	License          *License `json:"license,omitempty,omitzero" yaml:"license,omitempty,omitzero" toml:"license,omitempty,omitzero"`
-	tagsLock         sync.RWMutex
-	Tags             []string `json:"tags,omitempty,omitzero" yaml:"tags,omitempty,omitzero" toml:"tags,omitempty,omitzero"`
-	contributersLock sync.RWMutex
-	Contributers     []*Author `json:"contributers,omitempty,omitzero" yaml:"contributers,omitempty,omitzero" toml:"contributers,omitempty,omitzero"`
-	pathsLock        sync.RWMutex
-	Paths            map[string]string `json:"paths,omitempty,omitzero" yaml:"paths,omitempty,omitzero" toml:"paths,omitempty,omitzero"`
-	urlsLock         sync.RWMutex
-	Urls             map[string]string `json:"urls,omitempty,omitzero" yaml:"urls,omitempty,omitzero" toml:"urls,omitempty,omitzero"`
-	commandsLock     sync.RWMutex
-	Commands         map[string][]string `json:"commands,omitempty,omitzero" yaml:"commands,omitempty,omitzero" toml:"commands,omitempty,omitzero"`
+	Project      *Project            `json:"project,omitempty,omitzero" yaml:"project,omitempty,omitzero" toml:"project,omitempty,omitzero"`
+	License      *License            `json:"license,omitempty,omitzero" yaml:"license,omitempty,omitzero" toml:"license,omitempty,omitzero"`
+	Tags         []string            `json:"tags,omitempty,omitzero" yaml:"tags,omitempty,omitzero" toml:"tags,omitempty,omitzero"`
+	Contributers []*Author           `json:"contributers,omitempty,omitzero" yaml:"contributers,omitempty,omitzero" toml:"contributers,omitempty,omitzero"`
+	Paths        map[string]string   `json:"paths,omitempty,omitzero" yaml:"paths,omitempty,omitzero" toml:"paths,omitempty,omitzero"`
+	Urls         map[string]string   `json:"urls,omitempty,omitzero" yaml:"urls,omitempty,omitzero" toml:"urls,omitempty,omitzero"`
+	Commands     map[string][]string `json:"commands,omitempty,omitzero" yaml:"commands,omitempty,omitzero" toml:"commands,omitempty,omitzero"`
 }
 
 // Construct a new programme.
