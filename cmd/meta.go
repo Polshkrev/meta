@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/Polshkrev/gopolutils"
-	"github.com/Polshkrev/gopolutils/collections/safe"
+	"github.com/Polshkrev/gopolutils/collections"
 	"github.com/Polshkrev/gopolutils/fayl"
 	"github.com/Polshkrev/meta/models"
 )
@@ -22,12 +22,12 @@ const (
 
 var (
 	// Mapping of each of the available keys within a given tag.
-	mapping safe.Mapping[string, []string] = safe.NewMap[string, []string]()
+	mapping collections.Mapping[string, []string] = collections.NewMap[string, []string]()
 )
 
 // Intialize a given mapping with each of the programme's properties.
 // If any of the insertions fails, the function panics.
-func initializeMapping(mapping safe.Mapping[string, []string], programme *models.Programme) {
+func initializeMapping(mapping collections.Mapping[string, []string], programme *models.Programme) {
 	var except *gopolutils.Exception = mapping.Insert("tags", programme.Tags)
 	if except != nil {
 		panic(except)
@@ -54,7 +54,7 @@ func initializeMapping(mapping safe.Mapping[string, []string], programme *models
 // Returns the available keys within the mapping at a given tag.
 // If the mapping is empty, a [gopolutils.ValueError] is returned with a nil data pointer.
 // If the key is not in the mapping, a [gopolutils.KeyError] is returned with a nil data pointer.
-func getAvailableKeys(key string, mapping safe.Mapping[string, []string]) ([]string, *gopolutils.Exception) {
+func getAvailableKeys(key string, mapping collections.Mapping[string, []string]) ([]string, *gopolutils.Exception) {
 	var keys *[]string
 	var except *gopolutils.Exception
 	keys, except = mapping.At(key)
@@ -138,7 +138,7 @@ func main() {
 	var listFlag *string = flag.String("a", "", "Display all available keys at the given label.")
 	flag.Parse()
 	if *versionFlag {
-		fmt.Printf("%s - %s", programme.Project.Name, programme.Project.Version)
+		fmt.Printf("%s - %s\n", programme.Project.Name, programme.Project.Version)
 		os.Exit(0)
 	} else if *licenseFlag {
 		fmt.Print(gopolutils.Must(programme.ReadLicense()))
