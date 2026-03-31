@@ -1,13 +1,9 @@
 package models
 
-import "sync"
-
 // Representation of an author of a project.
 type Author struct {
-	nameLock  sync.RWMutex
-	Name      string `json:"name,omitempty" yaml:"name,omitempty" toml:"name,omitempty"`
-	emailLock sync.RWMutex
-	Email     string `json:"email,omitempty" yaml:"email,omitempty" toml:"email,omitempty"`
+	Name  string `json:"name,omitempty" yaml:"name,omitempty" toml:"name,omitempty"`
+	Email string `json:"email,omitempty" yaml:"email,omitempty" toml:"email,omitempty"`
 }
 
 // Construct a new project author.
@@ -17,28 +13,4 @@ func NewAuthor(name, email string) *Author {
 	author.Name = name
 	author.Email = email
 	return author
-}
-
-// Lock the internal mutex of the author writing.
-func (author *Author) Lock() {
-	author.nameLock.Lock()
-	author.emailLock.Lock()
-}
-
-// Unlock the internal mutex of the author writing.
-func (author *Author) Unlock() {
-	author.nameLock.Unlock()
-	author.emailLock.Unlock()
-}
-
-// Lock the internal mutex of the author for reading.
-func (author *Author) RLock() {
-	author.nameLock.RLock()
-	author.emailLock.RLock()
-}
-
-// Unlock the internal mutex of the author for reading.
-func (author *Author) RUnlock() {
-	author.nameLock.RUnlock()
-	author.emailLock.RUnlock()
 }
