@@ -68,10 +68,11 @@ func getAvailableKeys(key string, mapping collections.Mapping[string, []string])
 // Returns a new programme based on the given [fayl.Path].
 // If the given [fayl.Path] does not exist, the function panics with a [gopolutils.FileNotFoundError].
 func readMeta(path *fayl.Path) *models.Programme {
+	var absolute *fayl.Path = gopolutils.Must(path.Absolute())
 	if !path.Exists() {
-		panic(gopolutils.NewNamedException(gopolutils.FileNotFoundError, "File '%s' does not exist.", path))
+		panic(gopolutils.NewNamedException(gopolutils.FileNotFoundError, "File '%s' does not exist.", absolute))
 	}
-	return gopolutils.Must(fayl.ReadObject[models.Programme](path))
+	return gopolutils.Must(fayl.ReadObject[models.Programme](absolute))
 }
 
 // Obtain the output of the given command.
