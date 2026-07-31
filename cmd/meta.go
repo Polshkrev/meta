@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmp"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -97,6 +98,9 @@ func availableCommands(programme *models.Programme, intent models.Command, comma
 	var availableCommands string = fmt.Sprintf("[%s]", strings.Join(programme.AvailableCommands(), ", "))
 	if len(command) != 0 || command != nil {
 		return
+	} else if len(programme.Commands) == 0 || programme.Commands == nil {
+		fmt.Fprintln(os.Stderr, gopolutils.NewException(fmt.Sprintf("No commands have been defined for '%s'.", programme.Project.Name)))
+		os.Exit(1)
 	}
 	fmt.Fprintln(os.Stderr, gopolutils.NewException(fmt.Sprintf("No command '%s' has been defined for '%s'.\nAvailable Commands: %s", intent, programme.Project.Name, availableCommands)))
 	os.Exit(1)
@@ -127,7 +131,10 @@ func run(programme *models.Programme, intent models.Command) string {
 	var output string = <-outputChannel
 	var outputError error = <-errorChannel
 	if outputError != nil {
-		panic(gopolutils.NewNamedException(gopolutils.IOError, outputError.Error()))
+		if !errors.Is(outputError, &exec.ExitError{}) {
+			return output
+		}
+		panic(gopolutils.NewNamedException(gopolutils.IOError, "%s", outputError.Error()))
 	}
 	return output
 }
@@ -140,10 +147,10 @@ func main() {
 	flag.Parse()
 	if *versionFlag {
 		fmt.Printf("%s - %s\n", programme.Project.Name, programme.Project.Version)
-		os.Exit(0)
+		return
 	} else if *licenseFlag {
 		fmt.Print(gopolutils.Must(programme.ReadLicense()))
-		os.Exit(0)
+		return
 	} else if *listFlag != "" {
 		initializeMapping(mapping, programme)
 		var keys []string = gopolutils.Must(getAvailableKeys(*listFlag, mapping))
@@ -152,7 +159,7 @@ func main() {
 			var key string = keys[i]
 			fmt.Println(key)
 		}
-		os.Exit(0)
+		return
 	}
 	var intent string = cmp.Or(
 		flag.Arg(0),
