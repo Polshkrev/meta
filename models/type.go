@@ -3,6 +3,8 @@ package models
 import "github.com/Polshkrev/gopolutils"
 
 // Type of a programme.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 type Type gopolutils.StringEnum
 
 const (
@@ -18,6 +20,8 @@ const (
 
 // Represent a type of a programme as a string.
 // Returns a type of a programme as a string.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (kind Type) String() string {
 	return string(kind)
 }
