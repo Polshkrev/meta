@@ -16,18 +16,31 @@ import (
 )
 
 const (
-	Folder   string      = "."       // Parent folder where the target file is stored.
-	FileName string      = "meta"    // Name of the target file.
-	FileType fayl.Suffix = fayl.Toml // Suffix of the target file.
+	// Parent folder where the target file is stored.
+	//
+	// Deprecated: Due to a move to c++, this will be deleted.
+	Folder string = "."
+	// Name of the target file.
+	//
+	// Deprecated: Due to a move to c++, this will be deleted.
+	FileName string = "meta"
+	// Suffix of the target file.
+	//
+	// Deprecated: Due to a move to c++, this will be deleted.
+	FileType fayl.Suffix = fayl.Toml
 )
 
 var (
 	// Mapping of each of the available keys within a given tag.
+	//
+	// Deprecated: Due to a move to c++, this will be deleted.
 	mapping collections.Mapping[string, []string] = collections.NewMap[string, []string]()
 )
 
 // Intialize a given mapping with each of the programme's properties.
 // If any of the insertions fails, the function panics.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func initializeMapping(mapping collections.Mapping[string, []string], programme *models.Programme) {
 	var except *gopolutils.Exception = mapping.Insert("tags", programme.Tags)
 	if except != nil {
@@ -55,6 +68,8 @@ func initializeMapping(mapping collections.Mapping[string, []string], programme 
 // Returns the available keys within the mapping at a given tag.
 // If the mapping is empty, a [gopolutils.ValueError] is returned with a nil data pointer.
 // If the key is not in the mapping, a [gopolutils.KeyError] is returned with a nil data pointer.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func getAvailableKeys(key string, mapping collections.Mapping[string, []string]) ([]string, *gopolutils.Exception) {
 	var keys *[]string
 	var except *gopolutils.Exception
@@ -68,6 +83,8 @@ func getAvailableKeys(key string, mapping collections.Mapping[string, []string])
 // Read the given target file.
 // Returns a new programme based on the given [fayl.Path].
 // If the given [fayl.Path] does not exist, the function panics with a [gopolutils.FileNotFoundError].
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func readMeta(path *fayl.Path) *models.Programme {
 	var absolute *fayl.Path = gopolutils.Must(path.Absolute())
 	if !path.Exists() {
@@ -77,6 +94,8 @@ func readMeta(path *fayl.Path) *models.Programme {
 }
 
 // Obtain the output of the given command.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func getOutput(command *exec.Cmd, outputChannel chan<- string, errorChannel chan<- error) {
 	defer close(outputChannel)
 	defer close(errorChannel)
@@ -88,6 +107,8 @@ func getOutput(command *exec.Cmd, outputChannel chan<- string, errorChannel chan
 }
 
 // Handle the script option given to the given command result.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func handleScript(command []string, result **exec.Cmd) {
 	var commandPath *fayl.Path = gopolutils.Must(fayl.PathFrom(command[0]).Absolute())
 	*result = exec.Command(commandPath.String(), command[1:]...)
@@ -107,6 +128,8 @@ func availableCommands(programme *models.Programme, intent models.Command, comma
 }
 
 // Run a specified programme with a given intent.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func runCommand(programme *models.Programme, intent models.Command, outputChannel chan<- string, errorChannel chan<- error) {
 	if len(intent) == 0 {
 		fmt.Fprintln(os.Stderr, gopolutils.NewNamedException(gopolutils.RuntimeError, "No arguments have been provided."))
@@ -124,6 +147,8 @@ func runCommand(programme *models.Programme, intent models.Command, outputChanne
 
 // Run a given programme at a given intent.
 // Returns the string representation of the executed command.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func run(programme *models.Programme, intent models.Command) string {
 	var outputChannel chan string = make(chan string, 1)
 	var errorChannel chan error = make(chan error, 1)
@@ -139,6 +164,7 @@ func run(programme *models.Programme, intent models.Command) string {
 	return output
 }
 
+// Deprecated: Due to a move to c++, this will be deleted.
 func main() {
 	var programme *models.Programme = readMeta(fayl.PathFromParts(Folder, FileName, FileType))
 	var versionFlag *bool = flag.Bool("v", false, "Display the version of the programme.")
