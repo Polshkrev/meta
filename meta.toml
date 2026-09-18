@@ -5,7 +5,7 @@ description = "A golang build tool."
 type = "application"
 
 [project.version]
-minor = 1
+minor = 2
 
 [license]
 type = "MIT"
@@ -18,7 +18,7 @@ readme = "README.md"
 repository = "https://github.com/Polshkrev/meta"
 
 [commands]
-script = ["build/build"]
+script = ["bin/build", "-release", "-name", "meta"]
 run = ["bin/test.exe"]
 build = ["go", "build", "-o", "bin/meta.exe", "cmd/meta.go"]
 tidy = ["go", "mod", "tidy"]
