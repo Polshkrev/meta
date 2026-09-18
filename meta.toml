@@ -5,7 +5,9 @@ description = "A golang build tool."
 type = "application"
 
 [project.version]
-minor = 2
+minor = 3
+name = "Dirge"
+description = "Deprecated Everything."
 
 [license]
 type = "MIT"
