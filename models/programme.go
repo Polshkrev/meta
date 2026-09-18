@@ -8,6 +8,8 @@ import (
 )
 
 // Meta information about a language-agnostic programme.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 type Programme struct {
 	Project      *Project            `json:"project,omitempty,omitzero" yaml:"project,omitempty,omitzero" toml:"project,omitempty,omitzero"`
 	License      *License            `json:"license,omitempty,omitzero" yaml:"license,omitempty,omitzero" toml:"license,omitempty,omitzero"`
@@ -20,6 +22,8 @@ type Programme struct {
 
 // Construct a new programme.
 // Returns a new programme based on a given project.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func NewProgramme(project *Project) *Programme {
 	var programme *Programme = new(Programme)
 	programme.Project = project
@@ -33,6 +37,8 @@ func NewProgramme(project *Project) *Programme {
 
 // Obtain the names of each of the contributers for the project.
 // Returns a slice of strings containing all of the names of each of the contributers.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AvailableContributers() []string {
 	var result []string = make([]string, 0)
 	var i int
@@ -45,6 +51,8 @@ func (programme *Programme) AvailableContributers() []string {
 
 // Obtain the available commands for the project.
 // Returns a slice of strings containing all of the available commands.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AvailablePaths() []string {
 	var result []string = make([]string, 0)
 	var key string
@@ -56,6 +64,8 @@ func (programme *Programme) AvailablePaths() []string {
 
 // Obtain the available urls for the project.
 // Returns a slice of strings containing all of the available urls.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AvailableUrls() []string {
 	var result []string = make([]string, 0)
 	var key string
@@ -67,6 +77,8 @@ func (programme *Programme) AvailableUrls() []string {
 
 // Obtain the available paths for the project.
 // Returns a slice of strings containing all of the available paths.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AvailableCommands() []string {
 	var result []string = make([]string, 0)
 	var key string
@@ -77,22 +89,30 @@ func (programme *Programme) AvailableCommands() []string {
 }
 
 // Add a license to the programme.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AddLicense(license *License) {
 	programme.License = license
 }
 
 // Add tags to the programme.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AddTags(tags ...string) {
 	programme.Tags = append(programme.Tags, tags...)
 }
 
 // Add contributers to the programme.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AddContributers(contributers ...*Author) {
 	programme.Contributers = append(programme.Contributers, contributers...)
 }
 
 // Add a key to a map only if the key is not already stored in the map.
 // If the key is already found within the map, a [gopolutils.KeyError] is returned.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func checkedAdd[Type any](mapping *map[string]Type, key string, value Type) *gopolutils.Exception {
 	var ok bool
 	_, ok = (*mapping)[key]
@@ -105,18 +125,24 @@ func checkedAdd[Type any](mapping *map[string]Type, key string, value Type) *gop
 
 // Add a path to the programme.
 // If the path is already found within the programme, a [gopolutils.KeyError] is returned.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AddPath(key, value string) *gopolutils.Exception {
 	return checkedAdd(&programme.Paths, key, value)
 }
 
 // Add a url to the programme.
 // If the url is already found within the programme, a [gopolutils.KeyError] is returned.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AddUrl(key, value string) *gopolutils.Exception {
 	return checkedAdd(&programme.Urls, key, value)
 }
 
 // Add a command to the programme.
 // If the command is already found within the programme, a [gopolutils.KeyError] is returned.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) AddCommand(command Command, parts ...string) *gopolutils.Exception {
 	return checkedAdd(&programme.Commands, command.String(), parts)
 }
@@ -125,6 +151,8 @@ func (programme *Programme) AddCommand(command Command, parts ...string) *gopolu
 // Returns the path stored at the given key.
 // If the key is not found in the programme, a [gopolutils.KeyError] is returned with an empty string.
 // If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) ReadPath(path string) (string, *gopolutils.Exception) {
 	var ok bool
 	var item string
@@ -146,6 +174,8 @@ func (programme *Programme) ReadPath(path string) (string, *gopolutils.Exception
 // If the license is nil, an [gopolutils.IOError] is returned with an empty string.
 // If the license is determined to be incomplete or empty, a [gopolutils.ValueError] is returned with an empty string.
 // If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) ReadLicense() (string, *gopolutils.Exception) {
 	if programme.License == nil {
 		return "", gopolutils.NewNamedException(gopolutils.IOError, "No license has been provided for project '%s'.", programme)
@@ -157,6 +187,8 @@ func (programme *Programme) ReadLicense() (string, *gopolutils.Exception) {
 
 // Represent a programme as a string.
 // Returns a string representation of a programme.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (programme *Programme) String() string {
 	return programme.Project.Name
 }
