@@ -6,6 +6,8 @@ import (
 )
 
 // A license a programme uses.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 type License struct {
 	Type string `json:"type" yaml:"type" toml:"type"`
 	Path string `json:"path" yaml:"path" toml:"path"`
@@ -13,6 +15,8 @@ type License struct {
 
 // Construct a new license.
 // Returns a new license based on its given properties.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func NewLicense(kind, path string) *License {
 	var license *License = new(License)
 	license.Type = kind
@@ -23,6 +27,8 @@ func NewLicense(kind, path string) *License {
 // Read the license file as a string.
 // Returns the contents of the license file as string.
 // If the absolute path of the file can not be obtained, or the file can not be read, an [gopolutils.IOError] is returned with an empty string.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (license *License) Read() (string, *gopolutils.Exception) {
 	var raw []byte
 	var except *gopolutils.Exception
@@ -35,6 +41,8 @@ func (license *License) Read() (string, *gopolutils.Exception) {
 
 // Determine if the license is empty.
 // Returns true if the length of any of the license properties are equal to zero.
+//
+// Deprecated: Due to a move to c++, this will be deleted.
 func (license *License) IsEmpty() bool {
 	return len(license.Type) == 0 || len(license.Path) == 0
 }
