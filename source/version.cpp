@@ -12,7 +12,7 @@ namespace
      * @param version Version to append to the given stream.
      * @param newline If true is passed in, a newline is appended.
      */
-    void _version_print(std::ostream &stream, const polutils::version_t &version, bool newline) noexcept
+    void _version_print(std::ostream &stream, const meta::version_t &version, bool newline) noexcept
     {
         if (version.name.has_value())
         {
@@ -33,7 +33,7 @@ namespace
     }
 }
 
-namespace polutils
+namespace meta
 {
     /**
      * @brief Release the version object.
