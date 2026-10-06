@@ -4,9 +4,9 @@
 #include <string> // std::string
 #include <optional> // std::optional
 
-#include <author.hpp> //author_t
-#include <command.hpp> // command_t
-#include <version.hpp> // polutils::version_t
+#include <author.hpp> // meta::author_t
+#include <command.hpp> // meta::command_t
+#include "version.hpp" // meta::version_t
 
 #include <rfl/Ref.hpp> // rfl::Ref
 
@@ -54,7 +54,7 @@ namespace meta
         /**
          * @brief Optional version information of the project.
          */
-        std::optional<const rfl::Ref<polutils::version_t>> version;
+        std::optional<const rfl::Ref<version_t>> version;
     };
 }
 
