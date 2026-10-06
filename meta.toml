@@ -2,12 +2,12 @@
 name = "meta"
 author = {name = "Polshkrev"}
 description = "A golang build tool."
-type = "application"
+type = "Application"
 
 [project.version]
-minor = 3
-name = "Dirge"
-description = "Deprecated Everything."
+minor = 4
+name = "The C++ Update"
+description = "The programme is now written in C++."
 
 [license]
 type = "MIT"
