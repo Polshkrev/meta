@@ -2,10 +2,10 @@
 #include "Kada/programme.h"
 
 #define FILES_IMPLEMENTATION
-#include "Kada/lib/c/collections/files.h"
+#include "Kada/lib/c/fayl/files.h"
 
 #define ENTRY_IMPLEMENTATION
-#include "Kada/lib/c/collections/entry.h"
+#include "Kada/lib/c/fayl/entry.h"
 
 #define FLAG_IMPLEMENTATION
 #include "Kada/lib/c/flag.h"
@@ -36,13 +36,28 @@ void add_compiler_flags(command_t *command, const char *compiler, bool release)
     command_append(command, " -o ");
 }
 
+// bool add_entry(command_t *command, const entry_t *entry, const char *target_folder, const char *root, const char **result)
+// {
+//     if (entry->type != FILE_ENTRY_TYPE) return false;
+//     path_t parent = path_get_parent(&entry->path);
+//     if (strcmp(passtr(&parent), root) != 0) return false;
+//     suffix_t extension = path_extension(&entry->path);
+//     if (extension == SUFFIX_NONE) return false;
+//     path_t filename = path_filename(&entry->path);
+//     const char *filename_string = passtr(&filename);
+//     if (strcmp(filename_string, root) == 0) return false;
+//     command_appendf(command, "%s/%s.exe %s", target_folder, filename_string, passtr(&entry->path));
+//     *result = filename_string;
+//     return true;
+// }
+
 bool add_entry(command_t *command, const entry_t *entry, const char *target_folder, const char *root, const char **result)
 {
-    if (entry->type != FILE_TYPE) return false;
+    if (entry->type != FILE_ENTRY_TYPE) return false;
     path_t parent = path_get_parent(&entry->path);
     if (strcmp(passtr(&parent), root) != 0) return false;
     const char *extension = path_extension(&entry->path);
-    if (NULL == extension) return false;
+    if (extension == NULL) return false;
     path_t filename = path_filename(&entry->path);
     const char *filename_string = passtr(&filename);
     if (strcmp(filename_string, root) == 0) return false;
@@ -71,7 +86,7 @@ void constuct_commands(const files_t *files, programme_t *programme, bool releas
 int main(int argc, char **argv)
 {
 
-    char **target_name = flag_string(NAME_FLAG, DEFAULT_NAME, "Set the name of the programme to build.");
+    const char **target_name = flag_string(NAME_FLAG, DEFAULT_NAME, "Set the name of the programme to build.");
     bool *release = flag_bool(RELEASE_FLAG, false, "Set the release mode optimizations.");
     flag_parse(argc, argv);
     logger_t *logger = logger_init(BUILD_FOLDER, LOG_DEBUG);

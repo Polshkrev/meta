@@ -6,7 +6,8 @@
 
 int main(int argc, char **argv)
 {
-    char **target_name = flag_string("name", "main", "Set the name of the programme to run.");
+    const char **target_name = flag_string("name", "main", "Set the name of the programme to run.");
+    flag_bool("release", false, "Run the application in release mode. This currently is not implemented");
     flag_parse(argc, argv);
     const char *name = "run";
     const char *target_folder = "bin";
@@ -19,12 +20,14 @@ int main(int argc, char **argv)
     {
         size_t checkpoint = buffer_save();
         logger_log(logger, buffer_sprintf("RuntimeError: Can not run command: %s.\n", command_data(&run)), LOG_CRITICAL);
+        if (!process_close(process)) fprintf(stderr,  "ValueError: Can not close the current process.\n");
         command_delete(&run);
-        logger_delete(logger);
+        logger_delete(&logger);
         buffer_rewind(checkpoint);
         return 1;
     }
-    logger_delete(logger);
+    else if (!process_close(process)) fprintf(stderr,  "ValueError: Can not close the current process.\n");
+    logger_delete(&logger);
     command_delete(&run);
     return 0;
 }
