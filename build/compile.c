@@ -99,16 +99,11 @@ int main(int argc, char **argv)
     const char *target_folder = "bin";
     const char *includes_folder = "includes";
     const char *source_folder = "source";
-    // const char *toml_source = "thirdparty/reflect/rfl/internal";
     logger_t *logger = logger_init(name, LOG_DEBUG);
     logger_add_console(logger);
     command_t compile = command_init();
     build_command(&compile, compiler, target_folder, *target_name, command_folder, includes_folder, source_folder, *release);
-    // add_source(&compile, toml_source);
-    // add_source(&compile, "thirdparty/toml++");
     add_source(&compile, source_folder);
-    // add_source(&compile, "thirdparty/reflect/rfl/json");
-    // add_source(&compile, "thirdparty/reflect/rfl/parsing");
     process_t process = command_run_async_logged(&compile, logger);
     if (!process_wait(process))
     {
