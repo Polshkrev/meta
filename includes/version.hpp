@@ -9,7 +9,7 @@
 
 #include <rfl/Ref.hpp> // rfl::Ref
 
-namespace polutils
+namespace meta
 {
     /**
      * @brief Representation of a semantic-versioning object.
